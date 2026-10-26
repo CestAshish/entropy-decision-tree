@@ -1,13 +1,8 @@
-# entropy-decision-tree
+# Binary Decision Tree Classifier
 
-A decision tree classifier written from scratch with NumPy. It splits on **entropy** and **information gain**, lets you set how big the tree can grow, and can draw the tree as text, Graphviz or a matplotlib figure.
+A simple and clean binary decision tree classifier built from scratch using NumPy. It uses Shannon entropy and information gain to find the best binary split at each node.
 
-```bash
-pip install entropy-decision-tree          # core (numpy only)
-pip install entropy-decision-tree[plot]    # + matplotlib for plot_tree
-```
-
-## Quick start
+## Quick Start
 
 ```python
 from sklearn.datasets import load_iris
@@ -16,49 +11,39 @@ from entropy_tree import DecisionTreeClassifier, export_text
 iris = load_iris()
 tree = DecisionTreeClassifier(max_depth=3).fit(iris.data, iris.target)
 
-print(tree.score(iris.data, iris.target))
-print(export_text(tree, feature_names=iris.feature_names,
-                  class_names=list(iris.target_names)))
-tree.plot(feature_names=iris.feature_names)   # matplotlib Axes
+print("Accuracy:", tree.score(iris.data, iris.target))
+print(export_text(tree, feature_names=iris.feature_names, class_names=list(iris.target_names)))
 ```
 
+Example text output:
+```text
+[petal length (cm) <= 2.450] (n=150, H=1.585, IG=0.918)
+|-- yes: setosa (n=50, H=0.000) [50, 0, 0]
+`-- no:  [petal width (cm) <= 1.750] (n=100, H=1.000, IG=0.690)
+    |-- yes: [petal length (cm) <= 4.950] (n=54, H=0.445, IG=0.213)
+    |   |-- yes: versicolor (n=48, H=0.146) [0, 47, 1]
+    |   `-- no:  virginica (n=6, H=0.918) [0, 2, 4]
+    `-- no:  [petal length (cm) <= 4.850] (n=46, H=0.151, IG=0.091)
+        |-- yes: virginica (n=3, H=0.918) [0, 1, 2]
+        `-- no:  virginica (n=43, H=0.000) [0, 0, 43]
 ```
-[petal length (cm) <= 2.450]  H=1.585 IG=0.918 n=150
-|-- yes: setosa  n=50 H=0.000 [50, 0, 0]
-`-- no:  [petal width (cm) <= 1.750]  H=1.000 IG=0.690 n=100
-    |-- yes: [petal length (cm) <= 4.950]  H=0.445 IG=0.213 n=54
-    ...
-```
 
-![Iris tree](https://raw.githubusercontent.com/cestashish/entropy-decision-tree/main/docs/iris_tree.png)
+## Hyperparameters (Controlling Tree Size)
 
-## Hyperparameters (tree size)
+- `max_depth`: maximum depth of the tree (default: `None`).
+- `min_samples_split`: minimum samples required to split a node (default: `2`).
+- `min_samples_leaf`: minimum samples required in each leaf node (default: `1`).
+- `min_information_gain`: minimum information gain required to accept a split (default: `0.0`).
 
-| parameter | default | effect |
-|---|---|---|
-| `max_depth` | `None` | maximum depth (root = depth 0) |
-| `min_samples_split` | `2` | a node needs at least this many samples to be split |
-| `min_samples_leaf` | `1` | each child of a split must keep at least this many samples |
-| `min_information_gain` | `0.0` | a split must gain strictly more than this (bits) |
-| `max_leaf_nodes` | `None` | leaf budget; splits are taken best-gain first |
-| `max_features` | `None` | features tried per node: int, float, `"sqrt"`, `"log2"` |
-| `random_state` | `None` | seed for `max_features` sampling |
+## How It Works
 
-## API
+1. **Entropy**: $H(S) = -\sum p_k \log_2(p_k)$
+2. **Information Gain**: $IG(S, S_L, S_R) = H(S) - \frac{|S_L|}{|S|} H(S_L) - \frac{|S_R|}{|S|} H(S_R)$
+3. **Splitting**: At each node, it tests candidate thresholds (midpoints between consecutive sorted unique values) across all features and selects the binary split that maximizes information gain.
+4. **Recursion**: Recursively splits into left (`x <= threshold`) and right (`x > threshold`) children until stopping conditions are met.
 
-- `fit(X, y)`, `predict(X)`, `predict_proba(X)`, `score(X, y)`, `apply(X)`
-- `feature_importances_`, `get_depth()`, `get_n_leaves()`, `node_count`, `nodes()`, `root_`
-- `export_text(tree)`, `export_graphviz(tree)`, `plot_tree(tree)`
-- `entropy(counts)`, `information_gain(parent, left, right)`
-
-`X` must be numeric (NumPy array, list or pandas DataFrame, whose column names are reused). Labels can be any type.
-
-## Development
+## Testing
 
 ```bash
-pip install -e .[dev]
 pytest
-python examples/demo.py
 ```
-
-MIT licence.

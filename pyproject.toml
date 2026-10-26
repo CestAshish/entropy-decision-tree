@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "entropy-decision-tree"
+version = "0.1.0"
+description = "A from-scratch decision tree classifier based on entropy and information gain, with tree display."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "Ashish Singh" }]
+keywords = ["decision tree", "entropy", "information gain", "ID3", "machine learning"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = ["numpy>=1.21"]
+
+[project.optional-dependencies]
+plot = ["matplotlib>=3.5"]
+dev = ["pytest>=7", "matplotlib>=3.5", "scikit-learn>=1.0", "pandas"]
+
+[project.urls]
+Homepage = "https://github.com/cestashish/entropy-decision-tree"
+Repository = "https://github.com/cestashish/entropy-decision-tree"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/entropy_tree"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

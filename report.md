@@ -2,6 +2,8 @@
 
 **GitHub repository:** https://github.com/CestAshish/entropy-decision-tree
 
+**PyPI package:** https://pypi.org/project/entropy-decision-tree/ (`pip install entropy-decision-tree`)
+
 ## 1. Project Overview
 
 This project implements a binary decision tree classifier from scratch in Python using NumPy. The algorithm recursively partitions data at each node by finding a threshold that maximizes information gain based on Shannon entropy.
